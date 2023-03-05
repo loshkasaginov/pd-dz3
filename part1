@@ -1,0 +1,19 @@
+import pandas as pd
+
+log = pd.read_csv('log.csv', header=None)
+
+def source_type(row):
+    if row['traffic_source'] in ['Yandex', 'Google']:
+        return 'organic'
+    elif row['traffic_source'] in ['paid', 'email']:
+        if row['region'] == 'Russia':
+            return 'ad'
+        else:
+            return 'other'
+    else:
+        return row['traffic_source']
+
+log.columns = ['user_id', 'time', 'bet', 'win', 'event', 'details']
+log['source_type'] = log.apply(source_type, axis=1)
+
+print(log.head())
