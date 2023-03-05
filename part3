@@ -1,0 +1,17 @@
+import pandas as pd
+import numpy as np
+
+ratings = pd.read_csv('ratings.csv')
+
+ratings_count = ratings.groupby('userId').count()[['rating']].rename(columns={'rating': 'ratings_count'})
+active_users = ratings_count[ratings_count['ratings_count'] > 100].index.tolist()
+
+user_lifetime = pd.DataFrame(columns=['userId', 'lifetime'])
+
+for user_id in active_users:
+    timestamps = ratings[ratings['userId'] == user_id]['timestamp']
+    lifetime = timestamps.max() - timestamps.min()
+    user_lifetime = user_lifetime.append({'userId': user_id, 'lifetime': lifetime}, ignore_index=True)
+
+mean_lifetime = np.mean(user_lifetime['lifetime'])
+print(f"Среднее время жизни пользователей, которые выставили более 100 оценок: {mean_lifetime} секунд")
